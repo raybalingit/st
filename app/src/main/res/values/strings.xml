@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ST Electronics</string>
+    <string name="app_sub">A company of ST Engineering</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+</resources>
