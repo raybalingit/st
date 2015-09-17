@@ -11,19 +11,27 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.stengg.stee.stelectronics.R;
+import com.stengg.stee.stelectronics.models.Asset;
+import com.stengg.stee.stelectronics.parser.AssetParser;
 import com.stengg.stee.stelectronics.services.DownloadService;
+import com.stengg.stee.stelectronics.services.ParsingService;
 
-import java.io.ByteArrayOutputStream;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     ProgressDialog mProgressDialog;
     TextView tvContent;
+    long mStartTime;
+    String mMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
         // this is how you fire the downloader
         mProgressDialog.show();
+
         Intent intent = new Intent(this, DownloadService.class);
-        intent.putExtra("url", "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz");
+//        intent.putExtra("url", "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz");
+        intent.putExtra("url", "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz");
         intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+
+        mStartTime = System.currentTimeMillis();
         startService(intent);
     }
 
@@ -69,10 +81,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("unchecked")
-    public String loadArray(String filename){
+    public String loadArray(String filename) {
         try {
-            FileInputStream fis=new FileInputStream(filename);
-            GZIPInputStream gzis=new GZIPInputStream(fis);
+            FileInputStream fis = new FileInputStream(filename);
+            GZIPInputStream gzis = new GZIPInputStream(fis);
 //            ObjectInputStream in=new ObjectInputStream(gzis);
             String result = convertStreamToString(gzis);
 //            List<String> read_field=(List<String>)in.readObject();
@@ -81,11 +93,40 @@ public class MainActivity extends AppCompatActivity {
 //            return read_field;
             return result;
 
-        }
-        catch (  Exception e) {
+        } catch (Exception e) {
             e.getStackTrace();
         }
         return null;
+    }
+
+    private class ParseReceiver extends ResultReceiver {
+        public ParseReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == ParsingService.UPDATE_PROGRESS) {
+                int progress = (int) resultData.getLong("progress");
+                int max = (int) resultData.getInt("total");
+                mProgressDialog.setIndeterminate(false);
+                mProgressDialog.setMax(max);
+                mProgressDialog.setProgress(progress);
+                if (progress == max) {
+                    mProgressDialog.dismiss();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(mMessage);
+                    sb.append("\n");
+                    sb.append("Parse Duration: ");
+                    sb.append(System.currentTimeMillis() - mStartTime);
+                    sb.append("ms\n");
+                    mMessage = sb.toString();
+                }
+            }
+
+            tvContent.setText(mMessage);
+        }
     }
 
     private class DownloadReceiver extends ResultReceiver {
@@ -103,19 +144,68 @@ public class MainActivity extends AppCompatActivity {
                 mProgressDialog.setMax(max);
                 mProgressDialog.setProgress(progress);
                 if (progress == max) {
-                    String strings = loadArray("/sdcard/file.gz");
-                    tvContent.setText(strings);
+                    loadArray("/sdcard/file.gz");
                     mProgressDialog.dismiss();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Download Duration: ");
+                    sb.append(System.currentTimeMillis() - mStartTime);
+                    sb.append("ms\n");
+                    mProgressDialog.setMessage("Parsing ...");
+                    mProgressDialog.setIndeterminate(true);
+                    // this is how you fire the downloader
+                    mProgressDialog.show();
+//                    Intent intent = new Intent(MainActivity.this, ParsingService.class);
+//                    intent.putExtra("url", "/sdcard/ste.xml");
+//                    intent.putExtra("receiver", new ParseReceiver(new Handler()));
+//                    mStartTime = System.currentTimeMillis();
+//                    startService(intent);
+                    try {
+                        mStartTime = System.currentTimeMillis();
+                        InputStream is = new FileInputStream("/sdcard/ste.xml");
+                        AssetParser parser = new AssetParser();
+                        List<Asset> assets = parser.parse(is);
+
+                        sb.append("Parsing Duration: ");
+                        sb.append(System.currentTimeMillis() - mStartTime);
+                        sb.append("ms\n");
+
+                        for (Asset a : assets) {
+                            sb.append("(Asset: ");
+                            sb.append(a.getAssetNum() + ", ");
+                            sb.append(a.getDescription() + ", ");
+                            sb.append(a.getAssetCode() + ", ");
+                            sb.append(a.getLocation() + ", ");
+                            sb.append(a.getLocationCode() + ", ");
+                            sb.append(a.getUsage() + ", ");
+                            sb.append(a.getType() + ", ");
+                            sb.append(a.getParent() + ")\n");
+                        }
+
+                        mMessage = sb.toString();
+                        tvContent.setText(mMessage);
+                        mProgressDialog.dismiss();
+                    } catch (IOException e) {
+
+                    } catch (XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+
     }
 
+    /**
+     *
+     * @param is
+     * @return
+     */
     private String convertStreamToString(InputStream is) {
-        ByteArrayOutputStream oas = new ByteArrayOutputStream();
-        copyStream(is, oas);
-        String t = oas.toString();
+        String t = null;
         try {
+            OutputStream oas = new FileOutputStream("/sdcard/ste.xml");
+            copyStream(is, oas);
+            t = oas.toString();
             oas.close();
             oas = null;
         } catch (IOException e) {
@@ -125,20 +215,25 @@ public class MainActivity extends AppCompatActivity {
         return t;
     }
 
-    private void copyStream(InputStream is, OutputStream os)
-    {
+    /**
+     *
+     * @param is
+     * @param os
+     */
+    private void copyStream(InputStream is, OutputStream os) throws IOException {
         final int buffer_size = 1024;
-        try
-        {
-            byte[] bytes=new byte[buffer_size];
-            for(;;)
-            {
-                int count=is.read(bytes, 0, buffer_size);
-                if(count==-1)
+        try {
+            byte[] bytes = new byte[buffer_size];
+            for (; ; ) {
+                int count = is.read(bytes, 0, buffer_size);
+                if (count == -1)
                     break;
                 os.write(bytes, 0, count);
             }
+        } finally {
+            is.close();
+            os.close();
         }
-        catch(Exception ex){}
+
     }
 }
