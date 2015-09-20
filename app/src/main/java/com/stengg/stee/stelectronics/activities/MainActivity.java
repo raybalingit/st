@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.stengg.stee.stelectronics.R;
 import com.stengg.stee.stelectronics.models.Asset;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int DOWNLOAD_TASK = 1253;
 
     ProgressDialog mProgressDialog;
     TextView tvContent;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvContent = (TextView) findViewById(R.id.tv_content);
+        /*tvContent = (TextView) findViewById(R.id.tv_content);
 
         mProgressDialog = new ProgressDialog(MainActivity.this);
         mProgressDialog.setMessage("Downloading ...");
@@ -55,7 +57,22 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("receiver", new DownloadReceiver(new Handler()));
 
         mStartTime = System.currentTimeMillis();
-        startService(intent);
+        startService(intent);*/
+        new Handler().postDelayed(new Runnable() {
+
+            /*
+             * Showing splash screen with a timer. This will be useful when you
+             * want to show case your app logo / company
+             */
+
+            @Override
+            public void run() {
+                // This method will be executed once the timer is over
+                // Start your app main activity
+                Intent i = new Intent(MainActivity.this, DownloaderActivity.class);
+                startActivityForResult(i, DOWNLOAD_TASK);
+            }
+        }, 3000);
     }
 
     @Override
@@ -154,11 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     mProgressDialog.setIndeterminate(true);
                     // this is how you fire the downloader
                     mProgressDialog.show();
-//                    Intent intent = new Intent(MainActivity.this, ParsingService.class);
-//                    intent.putExtra("url", "/sdcard/ste.xml");
-//                    intent.putExtra("receiver", new ParseReceiver(new Handler()));
-//                    mStartTime = System.currentTimeMillis();
-//                    startService(intent);
+
                     try {
                         mStartTime = System.currentTimeMillis();
                         InputStream is = new FileInputStream("/sdcard/ste.xml");
@@ -234,6 +247,29 @@ public class MainActivity extends AppCompatActivity {
             is.close();
             os.close();
         }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == DOWNLOAD_TASK && resultCode == RESULT_OK) {
+            Toast.makeText(MainActivity.this, "Parsing...", Toast.LENGTH_LONG).show();
+            String[] files = data.getStringArrayExtra("files");
+            for (int i = 0; i < files.length; i++) {
+                loadArray(files[i]);
+                try {
+                    InputStream is = new FileInputStream("/sdcard/ste.xml");
+                    AssetParser parser = new AssetParser();
+                    List<Asset> assets = parser.parse(is);
+                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Toast.makeText(MainActivity.this, "IO Error", Toast.LENGTH_LONG).show();
+                } catch (XmlPullParserException e) {
+                    Toast.makeText(MainActivity.this, "XML Error", Toast.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "Download Cancelled", Toast.LENGTH_LONG).show();
+        }
     }
 }

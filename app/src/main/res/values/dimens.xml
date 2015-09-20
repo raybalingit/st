@@ -5,4 +5,7 @@
     <dimen name="text_large">24sp</dimen>
     <dimen name="text_small">12sp</dimen>
     <dimen name="logo_size">150dp</dimen>
+    <dimen name="row_padding">8dp</dimen>
+    <dimen name="control_spacing">4dp</dimen>
+    <dimen name="text_spacing">2dp</dimen>
 </resources>
