@@ -261,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                     InputStream is = new FileInputStream("/sdcard/ste.xml");
                     AssetParser parser = new AssetParser();
                     List<Asset> assets = parser.parse(is);
-                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, "IO Error", Toast.LENGTH_LONG).show();
                 } catch (XmlPullParserException e) {

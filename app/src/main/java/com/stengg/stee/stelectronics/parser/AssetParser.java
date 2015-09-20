@@ -1,9 +1,11 @@
 package com.stengg.stee.stelectronics.parser;
 
-import android.util.Xml;
-
 import com.stengg.stee.stelectronics.models.Asset;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -11,6 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Raymond Balingit on 18/9/2015.
@@ -22,19 +28,47 @@ public class AssetParser {
 
     public List parse(InputStream in) throws XmlPullParserException, IOException {
         try {
-            
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-            parser.setInput(in, null);
-            parser.nextTag();
-            return readPublishedAsset(parser);
+
+            // Create a new DocumentBuilderFactory
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+            // Use the factory to create a document builder
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Create a new document from input stream
+            Document doc = builder.parse(in);
+
+            // Get the first element
+            Element element = doc.getDocumentElement();
+
+            // Get All Child nodes
+            NodeList nodes = element.getChildNodes();
+
+            // Print the text
+            for (int i = 0; i < nodes.getLength(); i++) {
+                NodeList children = nodes.item(i).getChildNodes();
+            }
+
+
+//            XmlPullParser parser = Xml.newPullParser();
+//            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+//            parser.setInput(in, null);
+//            parser.nextTag();
+//            return readPublishedAsset(parser);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
         } finally {
             in.close();
         }
+
+        return null;
     }
 
     private List readPublishedAsset(XmlPullParser parser) throws XmlPullParserException, IOException {
         List entries = new ArrayList();
+
 
         parser.require(XmlPullParser.START_TAG, ns, "PublishMBLASSET");
         while (parser.next() != XmlPullParser.END_TAG) {
