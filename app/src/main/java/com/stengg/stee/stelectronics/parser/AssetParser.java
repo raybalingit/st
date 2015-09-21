@@ -18,9 +18,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-/**
- * Created by Raymond Balingit on 18/9/2015.
- */
 public class AssetParser {
 
     // We don't use namespaces
@@ -47,6 +44,7 @@ public class AssetParser {
             // Print the text
             for (int i = 0; i < nodes.getLength(); i++) {
                 NodeList children = nodes.item(i).getChildNodes();
+
             }
 
 

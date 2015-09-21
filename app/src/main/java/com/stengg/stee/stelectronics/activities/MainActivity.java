@@ -98,16 +98,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @SuppressWarnings("unchecked")
-    public String loadArray(String filename) {
+    public String loadArray(String filename, String destination) {
         try {
             FileInputStream fis = new FileInputStream(filename);
             GZIPInputStream gzis = new GZIPInputStream(fis);
-//            ObjectInputStream in=new ObjectInputStream(gzis);
-            String result = convertStreamToString(gzis);
-//            List<String> read_field=(List<String>)in.readObject();
-//
-//            in.close();
-//            return read_field;
+            String result = convertStreamToString(gzis, destination);
             return result;
 
         } catch (Exception e) {
@@ -161,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 mProgressDialog.setMax(max);
                 mProgressDialog.setProgress(progress);
                 if (progress == max) {
-                    loadArray("/sdcard/file.gz");
+                    loadArray("/sdcard/file.gz", "/sdcard/ste.xml");
                     mProgressDialog.dismiss();
                     StringBuilder sb = new StringBuilder();
                     sb.append("Download Duration: ");
@@ -213,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
      * @param is
      * @return
      */
-    private String convertStreamToString(InputStream is) {
+    private String convertStreamToString(InputStream is, String destination) {
         String t = null;
         try {
-            OutputStream oas = new FileOutputStream("/sdcard/ste.xml");
+            OutputStream oas = new FileOutputStream(destination);
             copyStream(is, oas);
-            t = oas.toString();
+//            t = oas.toString();
             oas.close();
             oas = null;
         } catch (IOException e) {
@@ -256,12 +251,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "Parsing...", Toast.LENGTH_LONG).show();
             String[] files = data.getStringArrayExtra("files");
             for (int i = 0; i < files.length; i++) {
-                loadArray(files[i]);
+
+                String filename = "/sdcard/" + files[i] + ".gz";
+                String destination = "/sdcard/" + files[i] + ".xml";
+                loadArray(filename, destination);
                 try {
-                    InputStream is = new FileInputStream("/sdcard/ste.xml");
+                    InputStream is = new FileInputStream(destination);
                     AssetParser parser = new AssetParser();
                     List<Asset> assets = parser.parse(is);
-//                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, "IO Error", Toast.LENGTH_LONG).show();
                 } catch (XmlPullParserException e) {
