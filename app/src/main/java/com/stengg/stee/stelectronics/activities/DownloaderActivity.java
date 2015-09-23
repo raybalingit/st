@@ -41,7 +41,7 @@ public class DownloaderActivity extends Activity {
 
         ListView listView = mListView = (ListView) findViewById(R.id.list_progress);
         long id = 0;
-        File[] files = {/*getFile("Assets", 1, "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz"),*/ getFile("Assets Full", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz")};
+        File[] files = {getFile("Assets", 1, "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz")/*, getFile("Assets Full", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz")*/};
         listView.setAdapter(mAdapter = new ArrayAdapter<File>(this,
                 R.layout.row_progress_bar, R.id.tv_title, files) {
             @Override
@@ -162,9 +162,8 @@ public class DownloaderActivity extends Activity {
                     Intent intentResult = new Intent();
                     String[] fileResults = new String[mAdapter.getCount()];
                     for (int i = 0; i < progresses.length; i++) {
-                        String filename = "sdcard/" + mAdapter.getItem(i).getName() + ".gz";
                         if (progresses[i] == 100) {
-                            fileResults[i] = filename;
+                            fileResults[i] = mAdapter.getItem(i).getName();
                             finished = true;
                         } else {
                             finished = false;
