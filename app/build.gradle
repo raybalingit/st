@@ -21,6 +21,7 @@ android {
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -29,4 +30,10 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.novoda:sexp:1.0.3'
+    compile('org.simpleframework:simple-xml:2.7.+'){
+        exclude module: 'stax'
+        exclude module: 'stax-api'
+        exclude module: 'xpp3'
+    }
+
 }

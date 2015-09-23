@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.stengg.stee.stelectronics.R;
 import com.stengg.stee.stelectronics.models.Asset;
 import com.stengg.stee.stelectronics.parser.AssetParser;
-import com.stengg.stee.stelectronics.services.DownloadService;
 import com.stengg.stee.stelectronics.services.ParsingService;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -146,67 +145,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class DownloadReceiver extends ResultReceiver {
-        public DownloadReceiver(Handler handler) {
-            super(handler);
-        }
 
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            super.onReceiveResult(resultCode, resultData);
-            if (resultCode == DownloadService.UPDATE_PROGRESS) {
-                int progress = (int) resultData.getLong("progress");
-                int max = (int) resultData.getInt("total");
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.setMax(max);
-                mProgressDialog.setProgress(progress);
-                if (progress == max) {
-                    loadArray("/sdcard/file.gz");
-                    mProgressDialog.dismiss();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("Download Duration: ");
-                    sb.append(System.currentTimeMillis() - mStartTime);
-                    sb.append("ms\n");
-                    mProgressDialog.setMessage("Parsing ...");
-                    mProgressDialog.setIndeterminate(true);
-                    // this is how you fire the downloader
-                    mProgressDialog.show();
-
-                    try {
-                        mStartTime = System.currentTimeMillis();
-                        InputStream is = new FileInputStream("/sdcard/ste.xml");
-                        AssetParser parser = new AssetParser();
-                        List<Asset> assets = parser.parse(is);
-
-                        sb.append("Parsing Duration: ");
-                        sb.append(System.currentTimeMillis() - mStartTime);
-                        sb.append("ms\n");
-
-                        for (Asset a : assets) {
-                            sb.append("(Asset: ");
-                            sb.append(a.getAssetNum() + ", ");
-                            sb.append(a.getDescription() + ", ");
-                            sb.append(a.getAssetCode() + ", ");
-                            sb.append(a.getLocation() + ", ");
-                            sb.append(a.getLocationCode() + ", ");
-                            sb.append(a.getUsage() + ", ");
-                            sb.append(a.getType() + ", ");
-                            sb.append(a.getParent() + ")\n");
-                        }
-
-                        mMessage = sb.toString();
-                        tvContent.setText(mMessage);
-                        mProgressDialog.dismiss();
-                    } catch (IOException e) {
-
-                    } catch (XmlPullParserException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-    }
 
     /**
      *
@@ -260,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     InputStream is = new FileInputStream("/sdcard/ste.xml");
                     AssetParser parser = new AssetParser();
-                    List<Asset> assets = parser.parse(is);
+                    List<Asset> assets = parser.parse("");
 //                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
                 } catch (IOException e) {
                     Toast.makeText(MainActivity.this, "IO Error", Toast.LENGTH_LONG).show();

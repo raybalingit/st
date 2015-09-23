@@ -1,22 +1,19 @@
 package com.stengg.stee.stelectronics.parser;
 
-import com.stengg.stee.stelectronics.models.Asset;
+import android.os.Environment;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import com.stengg.stee.stelectronics.models.Asset;
+import com.stengg.stee.stelectronics.models.PublishMBLASSET;
+
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Raymond Balingit on 18/9/2015.
@@ -26,8 +23,16 @@ public class AssetParser {
     // We don't use namespaces
     private static final String ns = null;
 
-    public List parse(InputStream in) throws XmlPullParserException, IOException {
-        try {
+    public List parse(String path) throws Exception {
+
+        File dir = Environment.getExternalStorageDirectory();
+        File yourFile = new File(dir, path);
+
+        Serializer serializer = new Persister();
+
+        PublishMBLASSET example = serializer.read(PublishMBLASSET.class, yourFile);
+        return example.getMBLASSETSet().getASSET();
+        /*try {
 
             // Create a new DocumentBuilderFactory
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -61,7 +66,10 @@ public class AssetParser {
             e.printStackTrace();
         } finally {
             in.close();
-        }
+        }*/
+
+
+
 
         return null;
     }
@@ -133,7 +141,7 @@ public class AssetParser {
                 parent = readParent(parser);
             } else if (name.equals("ORGID")) {
                 orgid = readOrg(parser);
-            }else {
+            } else {
                 skip(parser);
             }
         }
