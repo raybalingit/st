@@ -2,10 +2,13 @@ package com.stengg.stee.stelectronics.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -99,16 +102,12 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("unchecked")
     public String loadArray(String filename) {
         try {
-            FileInputStream fis = new FileInputStream(filename);
+            String fileinput = "/sdcard/" + filename + ".gz";
+            FileInputStream fis = new FileInputStream(fileinput);
             GZIPInputStream gzis = new GZIPInputStream(fis);
-//            ObjectInputStream in=new ObjectInputStream(gzis);
-            String result = convertStreamToString(gzis);
-//            List<String> read_field=(List<String>)in.readObject();
-//
-//            in.close();
-//            return read_field;
+            String fileoutput = "/sdcard/" + filename + ".xml";
+            String result = convertStreamToString(gzis, fileoutput);
             return result;
-
         } catch (Exception e) {
             e.getStackTrace();
         }
@@ -152,10 +151,10 @@ public class MainActivity extends AppCompatActivity {
      * @param is
      * @return
      */
-    private String convertStreamToString(InputStream is) {
+    private String convertStreamToString(InputStream is, String filename) {
         String t = null;
         try {
-            OutputStream oas = new FileOutputStream("/sdcard/ste.xml");
+            OutputStream oas = new FileOutputStream(filename);
             copyStream(is, oas);
             t = oas.toString();
             oas.close();
@@ -194,21 +193,69 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == DOWNLOAD_TASK && resultCode == RESULT_OK) {
             Toast.makeText(MainActivity.this, "Parsing...", Toast.LENGTH_LONG).show();
             String[] files = data.getStringArrayExtra("files");
-            for (int i = 0; i < files.length; i++) {
-                loadArray(files[i]);
-                try {
-                    InputStream is = new FileInputStream("/sdcard/ste.xml");
-                    AssetParser parser = new AssetParser();
-                    List<Asset> assets = parser.parse("");
-//                    Toast.makeText(MainActivity.this, "Size = " + assets.size(), Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    Toast.makeText(MainActivity.this, "IO Error", Toast.LENGTH_LONG).show();
-                } catch (XmlPullParserException e) {
-                    Toast.makeText(MainActivity.this, "XML Error", Toast.LENGTH_LONG).show();
-                }
-            }
+            new ParsingTask(files).execute();
         } else {
             Toast.makeText(MainActivity.this, "Download Cancelled", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    class ParsingTask extends AsyncTask<Void, Void, List<Asset>> {
+
+        ProgressDialog mDialog;
+        String[] data;
+        String mError = null;
+        long mDuration;
+
+        public ParsingTask(String[] files) {
+            data = files;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog = new ProgressDialog(MainActivity.this);
+            mDialog.setMessage("Parsing Assets");
+            mDialog.setIndeterminate(true);
+            mDialog.show();
+            mDuration = System.currentTimeMillis();
+        }
+
+        @Override
+        protected List<Asset> doInBackground(Void... params) {
+            for (int i = 0; i < data.length; i++) {
+                loadArray(data[i]);
+                try {
+                    String filename = "/" + data[i] + ".xml";
+                    AssetParser parser = new AssetParser();
+                    List<Asset> assets = parser.parse(filename);
+                    return assets;
+                } catch (IOException e) {
+                    mError = e.getMessage();
+                } catch (XmlPullParserException e) {
+                    mError = e.getMessage();
+                } catch (Exception e) {
+                    mError = e.getMessage();
+                }
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(List<Asset> assets) {
+            super.onPostExecute(assets);
+            mDuration = System.currentTimeMillis() - mDuration;
+            if (TextUtils.isEmpty(mError)) {
+                Toast.makeText(MainActivity.this, "Size = " + assets.size() + "\n Parsed in " +
+                        mDuration + "ms", Toast
+                        .LENGTH_LONG)
+                        .show();
+            } else {
+                Toast.makeText(MainActivity.this, mError, Toast.LENGTH_LONG).show();
+            }
+
+            if (mDialog.isShowing())
+                mDialog.dismiss();
         }
     }
 }

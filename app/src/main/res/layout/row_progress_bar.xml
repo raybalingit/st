@@ -60,7 +60,7 @@
             android:id="@+id/tv_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="MB"
+            android:text="KB"
             android:layout_marginLeft="@dimen/text_spacing"/>
     </LinearLayout>
 

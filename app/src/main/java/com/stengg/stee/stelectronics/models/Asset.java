@@ -1,198 +1,300 @@
 package com.stengg.stee.stelectronics.models;
 
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
+
+import java.util.List;
+
 /**
  * Created by Raymond Balingit on 18/9/2015.
  */
+@Root
 public class Asset
 {
+    @Element(name = "DIRECTION", required = false)
     private String DIRECTION;
 
+    @Element(name = "STATUSDATE", required = false)
     private String STATUSDATE;
 
+    @Element(name = "PLUSCISMTECLASS", required = false)
     private String PLUSCISMTECLASS;
 
+    @Element(name = "PLUSCPHYLOC", required = false)
     private String PLUSCPHYLOC;
 
+    @Element(name = "PLUSCASSETDEPT", required = false)
     private String PLUSCASSETDEPT;
 
+    @Element(name = "STARTMEASURE", required = false)
     private String STARTMEASURE;
 
+    @Element(name = "ENDMEASURE", required = false)
     private String ENDMEASURE;
 
+    @Element(name = "DEFAULTREPFAC", required = false)
     private String DEFAULTREPFAC;
 
+    @Element(name = "CHILDREN", required = false)
     private String CHILDREN;
 
+    @Element(name = "DISABLED", required = false)
     private String DISABLED;
 
+    @Element(name = "ISCALIBRATION", required = false)
     private String ISCALIBRATION;
 
+    @Element(name = "ORGID", required = false)
     private String ORGID;
 
+    @Element(name = "LOCATIONS", required = false)
     private Locations LOCATIONS;
 
+    @Element(name = "FAILURECODE", required = false)
     private String FAILURECODE;
 
+    @Element(name = "INVCOST", required = false)
     private String INVCOST;
 
+    @Element(name = "TOTUNCHARGEDCOST", required = false)
     private String TOTUNCHARGEDCOST;
 
+    @Element(name = "BINNUM", required = false)
     private String BINNUM;
 
+    @Element(name = "PLUSCSUMDIR", required = false)
     private String PLUSCSUMDIR;
 
+    @Element(name = "PLUSCISCONDESC", required = false)
     private String PLUSCISCONDESC;
 
+    @Element(name = "GLACCOUNT", required = false)
     private String GLACCOUNT;
 
+    @Element(name = "PLUSCOPRGEEU", required = false)
     private String PLUSCOPRGEEU;
 
+    @Element(name = "ASSETUID", required = false)
     private String ASSETUID;
 
+    @Element(name = "USAGE", required = false)
     private String USAGE;
 
+    @Element(name = "PLUSCISINHOUSECAL", required = false)
     private String PLUSCISINHOUSECAL;
 
+    @Element(name = "ISRUNNING", required = false)
     private String ISRUNNING;
 
+    @Element(name = "BUDGETCOST", required = false)
     private String BUDGETCOST;
 
+    @Element(name = "PARENT", required = false)
     private String PARENT;
 
+    @Element(name = "PLUSCLPLOC", required = false)
     private String PLUSCLPLOC;
 
+    @Element(name = "LRM", required = false)
     private String LRM;
 
+    @Element(name = "ASSETNUM", required = false)
     private String ASSETNUM;
 
+    @Element(name = "DESCRIPTION", required = false)
     private String DESCRIPTION;
 
+    @Element(name = "PLUSCSUMSPAN", required = false)
     private String PLUSCSUMSPAN;
 
+    @Element(name = "ASSETCODE", required = false)
     private String ASSETCODE;
 
+    @Element(name = "INSTALLDATE", required = false)
     private String INSTALLDATE;
 
+    @Element(name = "ITEMSETID", required = false)
     private String ITEMSETID;
 
+    @Element(name = "SHIFTNUM", required = false)
     private String SHIFTNUM;
 
+    @Element(name = "RETURNEDTOVENDOR", required = false)
     private String RETURNEDTOVENDOR;
 
+    @Element(name = "ANCESTOR", required = false)
     private String ANCESTOR;
 
+    @Element(name = "MAINTHIERCHY", required = false)
     private String MAINTHIERCHY;
 
+    @Element(name = "CHANGEBY", required = false)
     private String CHANGEBY;
 
+    @Element(name = "PLUSCPMEXTDATE", required = false)
     private String PLUSCPMEXTDATE;
 
+    @Element(name = "UNCHARGEDCOST", required = false)
     private String UNCHARGEDCOST;
 
+    @Element(name = "PLUSCVENDOR", required = false)
     private String PLUSCVENDOR;
 
+    @Element(name = "PLUSCOPRGEFROM", required = false)
     private String PLUSCOPRGEFROM;
 
+    @Element(name = "PLUSCLOOPNUM", required = false)
     private String PLUSCLOOPNUM;
 
+    @Element(name = "ITEMTYPE", required = false)
     private String ITEMTYPE;
 
+    @Element(name = "WARRANTYEXPDATE", required = false)
     private String WARRANTYEXPDATE;
 
+    @Element(name = "ENDDESCRIPTION", required = false)
     private String ENDDESCRIPTION;
 
+    @Element(name = "TLOAMHASH", required = false)
     private String TLOAMHASH;
 
+    @Element(name = "TOTALCOST", required = false)
     private String TOTALCOST;
 
+    @Element(name = "PLUSCMODELNUM", required = false)
     private String PLUSCMODELNUM;
 
+    @Element(name = "STARTDESCRIPTION", required = false)
     private String STARTDESCRIPTION;
 
+    @Element(name = "GROUPNAME", required = false)
     private String GROUPNAME;
 
+    @Element(name = "STATUS", required = false)
     private Status STATUS;
 
+    @Element(name = "PLUSCSOLUTION", required = false)
     private String PLUSCSOLUTION;
 
+    @Element(name = "SERIALNUM", required = false)
     private String SERIALNUM;
 
+    @Element(name = "PLUSCSUMREAD", required = false)
     private String PLUSCSUMREAD;
 
+    @Element(name = "PLUSCCLASS", required = false)
     private String PLUSCCLASS;
 
+    @Element(name = "PURCHASEPRICE", required = false)
     private String PURCHASEPRICE;
 
+    @Element(name = "TOOLCONTROLACCOUNT", required = false)
     private String TOOLCONTROLACCOUNT;
 
+    @Element(name = "PLUSCSUMURV", required = false)
     private String PLUSCSUMURV;
 
+    @Element(name = "PLUSCDUEDATE", required = false)
     private String PLUSCDUEDATE;
 
+    @Element(name = "MAINT_OWNER", required = false)
     private String MAINT_OWNER;
 
+    @Element(name = "PLUSCISMTE", required = false)
     private String PLUSCISMTE;
 
+    @Element(name = "TOTDOWNTIME", required = false)
     private String TOTDOWNTIME;
 
+    @Element(name = "SADDRESSCODE", required = false)
     private String SADDRESSCODE;
 
+    @Element(name = "SITEID", required = false)
     private String SITEID;
 
+    @Element(name = "CHANGEDATE", required = false)
     private String CHANGEDATE;
 
+    @Element(name = "MANUFACTURER", required = false)
     private String MANUFACTURER;
 
+    @Element(name = "ITEMNUM", required = false)
     private String ITEMNUM;
 
+    @Element(name = "ASSETID", required = false)
     private String ASSETID;
 
+    @Element(name = "TOOLRATE", required = false)
     private String TOOLRATE;
 
+    @Element(name = "CLASSSTRUCTUREID", required = false)
     private String CLASSSTRUCTUREID;
 
+    @Element(name = "RIORITY", required = false)
     private String PRIORITY;
 
+    @Element(name = "PLUSCSUMEU", required = false)
     private String PLUSCSUMEU;
 
+    @Element(name = "ROTSUSPACCT", required = false)
     private String ROTSUSPACCT;
 
+    @Element(name = "REPLACECOST", required = false)
     private String REPLACECOST;
 
+    @Element(name = "CALNUM", required = false)
     private String CALNUM;
 
+    @Element(name = "TLOAMPARTITION", required = false)
     private String TLOAMPARTITION;
 
+    @Element(name = "PLUSCOPRGETO", required = false)
     private String PLUSCOPRGETO;
 
+    @Element(name = "LOCATION", required = false)
     private String LOCATION;
 
+    @Element(name = "ASSETTAG", required = false)
     private String ASSETTAG;
 
+    @Element(name = "AUTOWOGEN", required = false)
     private String AUTOWOGEN;
 
+    @Element(name = "CONDITIONCODE", required = false)
     private String CONDITIONCODE;
 
+    @Element(name = "DEFAULTREPFACSITEID", required = false)
     private String DEFAULTREPFACSITEID;
 
+    @Element(name = "YTDCOST", required = false)
     private String YTDCOST;
 
+    @Element(name = "ASSETTYPE", required = false)
     private String ASSETTYPE;
 
+    @Element(name = "TEMPLATEID", required = false)
     private String TEMPLATEID;
 
+    @Element(name = "ISLINEAR", required = false)
     private String ISLINEAR;
 
+    @Element(name = "PLUSCISCONTAM", required = false)
     private String PLUSCISCONTAM;
 
+    @Element(name = "MOVED", required = false)
     private String MOVED;
 
+    @Element(name = "VENDOR", required = false)
     private String VENDOR;
 
+    @ElementList(name = "ASSETSPEC", inline = true, required = false)
     private AssetSpec ASSETSPEC;
 
-    private WorkOrder WORKORDER;
+    @ElementList(name = "WORKORDER", inline = true, required = false)
+    private List<WorkOrder> WORKORDER;
 
+    @Element(name = "DOCLINKS", required = false)
     private DocLinks DOCLINKS;
 
     public String getDIRECTION ()
@@ -1129,11 +1231,11 @@ public class Asset
         this.ASSETSPEC = ASSETSPEC;
     }
 
-    public WorkOrder getWORKORDER() {
+    public List<WorkOrder> getWORKORDER() {
         return WORKORDER;
     }
 
-    public void setWORKORDER(WorkOrder WORKORDER) {
+    public void setWORKORDER(List<WorkOrder> WORKORDER) {
         this.WORKORDER = WORKORDER;
     }
 

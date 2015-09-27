@@ -1,33 +1,35 @@
 package com.stengg.stee.stelectronics.models;
 
 import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 
 /**
  * Created by Raymond Balingit on 24/9/2015.
  */
 public class PublishMBLASSET {
 
-    @Attribute
+    @Attribute(required = false)
     private String creationDateTime;
 
-    @Attribute
+    @Attribute(required = false)
     private String messageID;
 
-    @Attribute
+    @Attribute(required = false)
     private String transLanguage;
 
-    @Attribute
+    @Attribute(required = false)
     private String event;
 
-    @Attribute
+    @Attribute(required = false)
     private String baseLanguage;
 
+    @Element(name = "MBLASSETSet")
     private MblAssetSet MBLASSETSet;
 
-    @Attribute
+    @Attribute(required = false)
     private String xmlns;
 
-    @Attribute
+    @Attribute(required = false)
     private String maximoVersion;
 
     public String getCreationDateTime() {

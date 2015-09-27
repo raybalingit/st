@@ -1,8 +1,11 @@
 package com.stengg.stee.stelectronics.models;
 
+import org.simpleframework.xml.Root;
+
 /**
  * Created by Raymond Balingit on 24/9/2015.
  */
+@Root
 public class WorkOrder
 {
     private String ASSIGNEDOWNERGROUP;
