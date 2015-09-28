@@ -41,7 +41,7 @@ public class DownloaderActivity extends Activity {
 
         ListView listView = mListView = (ListView) findViewById(R.id.list_progress);
         long id = 0;
-        File[] files = {getFile("Assets2", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3698688.144067407565393761.xml.gz")/*getFile("Assets", 1, "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz")/*, getFile("Assets Full", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz")*/};
+        File[] files = {/*getFile("Assets2", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3698688.144067407565393761.xml.gz")*/getFile("Assets", 1, "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz")/*, getFile("Assets Full", 2, "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz")*/};
         listView.setAdapter(mAdapter = new ArrayAdapter<File>(this,
                 R.layout.row_progress_bar, R.id.tv_title, files) {
             @Override

@@ -3,7 +3,19 @@
     <string name="app_sub">A company of ST Engineering</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Assets</string>
     <string name="completed">Completed</string>
     <string name="title_activity_downloader">DownloaderActivity</string>
+    <string name="search">Search</string>
+    <string name="sync">Sync</string>
+
+    <string name="header_asset">Asset</string>
+    <string name="header_desc">Description</string>
+    <string name="header_assset_code">Asset Code</string>
+    <string name="header_location">Location</string>
+    <string name="header_location_code">Location Code</string>
+    <string name="header_usage">Usage</string>
+    <string name="header_type">Type</string>
+    <string name="header_parent">Parent</string>
+    <string name="title_activity_asset_details">AssetDetails</string>
 </resources>

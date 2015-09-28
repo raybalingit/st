@@ -4,13 +4,14 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Raymond Balingit on 18/9/2015.
  */
 @Root
-public class Asset
+public class Asset implements Serializable
 {
     @Element(name = "DIRECTION", required = false)
     private String DIRECTION;

@@ -6,7 +6,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -15,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.stengg.stee.stelectronics.R;
+import com.stengg.stee.stelectronics.adapter.AssetAdapter;
+import com.stengg.stee.stelectronics.base.STApplication;
 import com.stengg.stee.stelectronics.models.Asset;
 import com.stengg.stee.stelectronics.parser.AssetParser;
 import com.stengg.stee.stelectronics.services.ParsingService;
@@ -26,55 +34,69 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 public class MainActivity extends AppCompatActivity {
     public static final int DOWNLOAD_TASK = 1253;
 
+    private Toolbar mToolbar;
+    private RecyclerView mRvTable;
+    private CoordinatorLayout mSnackbarLayout;
+
+    private LinearLayoutManager mLayoutManager;
+    AssetAdapter mAdapter;
+
     ProgressDialog mProgressDialog;
-    TextView tvContent;
+
     long mStartTime;
     String mMessage;
+
+    List<Asset> mAssets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*tvContent = (TextView) findViewById(R.id.tv_content);
+        mToolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(mToolbar);
 
-        mProgressDialog = new ProgressDialog(MainActivity.this);
-        mProgressDialog.setMessage("Downloading ...");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
+        mRvTable = (RecyclerView) findViewById(R.id.rv_table);
+        mRvTable.setHasFixedSize(true);
 
-        // this is how you fire the downloader
-        mProgressDialog.show();
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(this);
+        mRvTable.setLayoutManager(mLayoutManager);
 
-        Intent intent = new Intent(this, DownloadService.class);
-//        intent.putExtra("url", "http://veanovenario.com/work/mi-st/MOBILEASSETEXTSYS_MBLASSET_3003141.1440734633858539684.xml.gz");
-        intent.putExtra("url", "http://veanovenario.com/work/mi-st/1x_Asset_A1032.xml.gz");
-        intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+        // initialize array
+        mAssets = new ArrayList<>();
+        mAdapter = new AssetAdapter(this, mAssets);
+        mRvTable.setAdapter(mAdapter);
 
-        mStartTime = System.currentTimeMillis();
-        startService(intent);*/
-        new Handler().postDelayed(new Runnable() {
+        mSnackbarLayout = (CoordinatorLayout) findViewById(R.id.snackbarPosition);
+
+        if (STApplication.getInstance().getAssetList() == null || STApplication.getInstance()
+                .getAssetList().size() <= 0) {
+            new Handler().postDelayed(new Runnable() {
 
             /*
              * Showing splash screen with a timer. This will be useful when you
              * want to show case your app logo / company
              */
 
-            @Override
-            public void run() {
-                // This method will be executed once the timer is over
-                // Start your app main activity
-                Intent i = new Intent(MainActivity.this, DownloaderActivity.class);
-                startActivityForResult(i, DOWNLOAD_TASK);
-            }
-        }, 3000);
+                @Override
+                public void run() {
+                    // This method will be executed once the timer is over
+                    // Start your app main activity
+                    Intent i = new Intent(MainActivity.this, DownloaderActivity.class);
+                    startActivityForResult(i, DOWNLOAD_TASK);
+                }
+            }, 3000);
+        } else {
+            mAdapter.refresh(STApplication.getInstance().getAssetList());
+        }
     }
 
     @Override
@@ -113,38 +135,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
-
-    private class ParseReceiver extends ResultReceiver {
-        public ParseReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            super.onReceiveResult(resultCode, resultData);
-            if (resultCode == ParsingService.UPDATE_PROGRESS) {
-                int progress = (int) resultData.getLong("progress");
-                int max = (int) resultData.getInt("total");
-                mProgressDialog.setIndeterminate(false);
-                mProgressDialog.setMax(max);
-                mProgressDialog.setProgress(progress);
-                if (progress == max) {
-                    mProgressDialog.dismiss();
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(mMessage);
-                    sb.append("\n");
-                    sb.append("Parse Duration: ");
-                    sb.append(System.currentTimeMillis() - mStartTime);
-                    sb.append("ms\n");
-                    mMessage = sb.toString();
-                }
-            }
-
-            tvContent.setText(mMessage);
-        }
-    }
-
-
 
     /**
      *
@@ -191,11 +181,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == DOWNLOAD_TASK && resultCode == RESULT_OK) {
-            Toast.makeText(MainActivity.this, "Parsing...", Toast.LENGTH_LONG).show();
             String[] files = data.getStringArrayExtra("files");
             new ParsingTask(files).execute();
         } else {
-            Toast.makeText(MainActivity.this, "Download Cancelled", Toast.LENGTH_LONG).show();
+            Snackbar.make(mSnackbarLayout, "Download Cancelled", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -246,16 +235,26 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(assets);
             mDuration = System.currentTimeMillis() - mDuration;
             if (TextUtils.isEmpty(mError)) {
-                Toast.makeText(MainActivity.this, "Size = " + assets.size() + "\n Parsed in " +
-                        mDuration + "ms", Toast
-                        .LENGTH_LONG)
-                        .show();
+                Snackbar.make(mSnackbarLayout, "Size = " + assets.size() + "\n Parsed in " +
+                        mDuration + "ms", Snackbar.LENGTH_LONG).show();
+                STApplication.getInstance().setAssets(assets);
+                mAdapter.refresh(assets);
             } else {
-                Toast.makeText(MainActivity.this, mError, Toast.LENGTH_LONG).show();
+                Snackbar.make(mSnackbarLayout, mError, Snackbar.LENGTH_LONG).show();
             }
 
             if (mDialog.isShowing())
                 mDialog.dismiss();
         }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 }
